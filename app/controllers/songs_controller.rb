@@ -20,7 +20,33 @@ class SongsController < ApplicationController
   end
   
   post '/songs' do
-    update_or_create_song_from_params
+    @song = Song.create(:name => params[:song_name])
+    
+    if !params[:new_artist].empty? && Artist.find_by(:name => params[:new_artist]).nil?
+      @artist = Artist.create(:name => params[:new_artist])
+    elsif !params[:new_artist].empty?
+      @artist = Artist.find_by(:name => params[:new_artist])
+    else
+      @artist = Artist.find_by(:name => params[:existing_artist])
+    end
+    @song.artist = @artist
+    
+    @genres = []
+    if !params[:new_genre].empty?
+      genre = Genre.create(:name => params[:new_genre])
+      @genres << genre
+    end
+    
+    if !params[:existing_genres].empty?
+      params[:existing_genres].each do |g|
+        genre = Genre.find_by(:name => g)
+        @genres << genre 
+      end
+    end
+    
+    @genres.each {|g| @song.genres << g}
+    
+    @song.save
     flash[:message] = "Successfully created song."
     redirect to "/songs/#{@song.slug}"
   end
@@ -33,17 +59,8 @@ class SongsController < ApplicationController
   end
   
   patch '/songs/:slug' do
-    update_or_create_song_from_params
-    flash[:message] = "Successfully updated song."
-    redirect to "/songs/#{@song.slug}"
-  end
-  
-  def update_or_create_song_from_params
-    if params[:slug].empty? || params[:slug].nil?
-      @song = Song.create(:name => params[:song_name])
-    else
-      @song = Song.find_by_slug(params[:slug])
-    end
+    @song = Song.find_by_slug(params[:slug])
+    @song.name = params[:song_name]
     
     if !params[:new_artist].empty? && Artist.find_by(:name => params[:new_artist]).nil?
       @artist = Artist.create(:name => params[:new_artist])
@@ -70,6 +87,8 @@ class SongsController < ApplicationController
     @genres.each {|g| @song.genres << g}
     
     @song.save
+    flash[:message] = "Successfully updated song."
+    redirect to "/songs/#{@song.slug}"
   end
   
 
