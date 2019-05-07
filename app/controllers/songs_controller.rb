@@ -92,7 +92,8 @@ class SongsController < ApplicationController
   end
   
   def update_or_create_from_params(prms)
-    @song = Song.find_by_slug(params[:slug]) ||=
+    
+    @song = Song.find_by_slug(params[:slug])
   end
   
 
