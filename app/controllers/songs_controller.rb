@@ -59,8 +59,17 @@ class SongsController < ApplicationController
   end
   
   patch '/songs/:slug' do
-    @song = Song.find_by_slug(params[:slug])
-    @song.name = params[:song_name]
+    update_or_create_from_params
+    flash[:message] = "Successfully updated song."
+    redirect to "/songs/#{@song.slug}"
+  end
+  
+  def update_or_create_from_params
+    if params[:slug].empty? || params.[:slug].nil?
+      @song = Song.create(:name => params[:song_name])
+    else
+      @song = Song.find_by_slug(params[:slug])
+    end
     
     if !params[:new_artist].empty? && Artist.find_by(:name => params[:new_artist]).nil?
       @artist = Artist.create(:name => params[:new_artist])
@@ -87,17 +96,6 @@ class SongsController < ApplicationController
     @genres.each {|g| @song.genres << g}
     
     @song.save
-    flash[:message] = "Successfully updated song."
-    redirect to "/songs/#{@song.slug}"
-  end
-  
-  def update_or_create_from_params(prms)
-    if params[:slug].empty? || params.[:slug].nil?
-      @song = Song.create(:name => params[:song_name])
-    else
-      @song = Song.find_by_slug(params[:slug])
-    end
-
   end
   
 
