@@ -39,7 +39,7 @@ class SongsController < ApplicationController
   end
   
   def update_or_create_song_from_params
-    if params[:slug].empty? || params.[:slug].nil?
+    if params[:slug].empty? || params[:slug].nil?
       @song = Song.create(:name => params[:song_name])
     else
       @song = Song.find_by_slug(params[:slug])
