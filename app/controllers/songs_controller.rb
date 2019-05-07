@@ -91,8 +91,8 @@ class SongsController < ApplicationController
     redirect to "/songs/#{@song.slug}"
   end
   
-  def update_or_create_from_params(prms, slug=nil)
-    
+  def update_or_create_from_params(prms)
+    @song = Song.find_by_slug(params[:slug]) ||=
   end
   
 
