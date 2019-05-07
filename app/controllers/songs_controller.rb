@@ -91,5 +91,9 @@ class SongsController < ApplicationController
     redirect to "/songs/#{@song.slug}"
   end
   
+  def update_or_create_from_params(prms)
+    
+  end
+  
 
 end
